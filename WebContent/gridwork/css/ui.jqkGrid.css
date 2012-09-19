@@ -6,8 +6,11 @@
 .jqkg .jqkg-content{position:relative}
 .jqkg .jqkg-content .jqkg-table{position:relative; float:left}
 .jqkg .jqkg-content .jqkg-vscroll{position:relative; float:left;width:18px}
-.jqkg .jqkg-content .jqkg-vscroll .jqkg-vscroll-in{position:absolute; overflow:scroll;}
+.jqkg .jqkg-content .jqkg-vscroll .jqkg-vscroll-in{position:relative; overflow-y:scroll;}
+.jqkg .jqkg-content .jqkg-vscroll .jqkg-vscroll-inin{position:relative;width:1px}
 .jqkg .jqkg-content .jqkg-hscroll{position:relative; float:left;height:18px}
+.jqkg .jqkg-content .jqkg-hscroll .jqkg-hscroll-in{position:relative; overflow-x:scroll;}
+.jqkg .jqkg-content .jqkg-hscroll .jqkg-hscroll-inin{position:relative;height:1px}
 
 .jqkg .jqkg-content{position:relative}
 /*∆‰¿Ã¿˙*/
