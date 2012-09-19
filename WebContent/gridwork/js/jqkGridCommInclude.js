@@ -3,6 +3,7 @@
 document.write ('  \
 	<!--style-->\
 	<link rel="stylesheet" type="text/css" media="screen" href="css/jquiThemes/sunny/jquery-ui-1.8.21.custom.css" />			\
+	<link rel="stylesheet" type="text/css" media="screen" href="css/ui.jqGrid.css" />			\
 	<link rel="stylesheet" type="text/css" media="screen" href="css/ui.jqkGrid.css" />			\
 	<!--jQuery, jQueryUI-->\
 	<script src="js/jquery-1.7.2.js" type="text/javascript"></script>			\
