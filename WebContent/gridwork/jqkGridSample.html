@@ -49,31 +49,7 @@
 
 </head>
 <body>
-		<!-- jqkGrid -->
-		<!-- font size는 ui-widget의 속성에서 우선권이 주어지므로 부득이하게 하드코딩? -->
 
-
-<style>
-table{position:relative;border : 0px none;table-layout:fixed; }
-td{overflow:hidden;text-overflow:ellipsis;}
-</style>
-<table border=1> 
-<colgroup>
-	<col width="150px" />
-	<col width="150px"/>
-</colgroup>
-<tr> 
-<td>번호</td> 
-<td>내용</td> 
-</tr> 
-<tr> 
-<td>1</td> 
-<td style="">
-<nobr>동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산 ~~</nobr>
-</td> 
-</tr> 
-</table> 
-		
 		<div id="jqkGrid" style="WIDTH: 670px;font-size: 11px" class="jqkg ui-widget ui-widget-content">
 			<!-- 타이틀 -->
 			<div class="ui-widget-header ui-helper-clearfix jqkg-titlebar"><SPAN class="jqkg-title">jqk Grid 랜더링</SPAN>
@@ -121,14 +97,17 @@ td{overflow:hidden;text-overflow:ellipsis;}
 						</table>
 					</div>
  					<div class="jqkg-table-bl" style="width:200px">
-						<table class=""  cellspacing="0" cellpadding="0">
+ 						<!-- table에도 width를 먹여야 말줄임표가 제대로 나옴 -->
+						<table class=""  width="200px" cellspacing="0" cellpadding="0">
 							<colgroup>
 								<col width="50px" />
 								<col width="50px"/>
 								<col width="100px"/>
 							</colgroup>
 							<tr>
-								<td class="ui-widget-content">a</td>
+								<td class="ui-widget-content">
+									<div class="jqkg-ellipsis">(변경 후)나는 자랑스러운 태극기 앞에 자유롭고 정의로운 대한민국의 무궁한 발전을 위해 충성을 다할 것을 굳게 다짐합니다.(변경 후)나는 자랑스러운 태극기 앞에 자유롭고 정의로운 대한민국의 무궁한 발전을 위해 충성을 다할 것을 굳게 다짐합니다.</div>
+								</td>
 								<td class="ui-widget-content">b</td>
 								<td class="ui-widget-content">c</td>
 							</tr>
