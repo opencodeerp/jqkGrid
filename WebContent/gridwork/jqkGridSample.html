@@ -51,8 +51,28 @@
 <body>
 		<!-- jqkGrid -->
 		<!-- font size는 ui-widget의 속성에서 우선권이 주어지므로 부득이하게 하드코딩? -->
-		
-		
+
+
+<style>
+table{position:relative;border : 0px none;table-layout:fixed; }
+td{overflow:hidden;text-overflow:ellipsis;}
+</style>
+<table border=1> 
+<colgroup>
+	<col width="150px" />
+	<col width="150px"/>
+</colgroup>
+<tr> 
+<td>번호</td> 
+<td>내용</td> 
+</tr> 
+<tr> 
+<td>1</td> 
+<td style="">
+<nobr>동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라만세 무궁화 삼천리 화려강산 ~~</nobr>
+</td> 
+</tr> 
+</table> 
 		
 		<div id="jqkGrid" style="WIDTH: 670px;font-size: 11px" class="jqkg ui-widget ui-widget-content">
 			<!-- 타이틀 -->
@@ -64,13 +84,120 @@
 			
 			<!-- 컨텐트 -->
 			<div class="jqkg-content" style="height:200px">
-				<div class="jqkg-table" style="width:652px;height:182px">
-					<div class="jqkg-table-hl"></div>
-					<div class="jqkg-table-hr"></div>
-					<div class="jqkg-table-bl"></div>
-					<div class="jqkg-table-br"></div>
+			
+				<div class="jqkg-table" style="width:652px;height:182px;position:relative"">
+					<div class="jqkg-table-hl" style="width:200px">
+						<table class=""  cellspacing="0" cellpadding="0">
+							<colgroup>
+								<col width="50px" />
+								<col width="50px"/>
+								<col width="100px"/>
+							</colgroup>
+							<tr>
+								<td class="ui-state-default">a</td>
+								<td class="ui-state-default">b</td>
+								<td class="ui-state-default">c</td>
+							</tr>
+						</table>
+					</div>
+					<div class="jqkg-table-hr" style="width:452px">
+						<table class="" width="600px" cellspacing="0" cellpadding="0" style="table-layout:fixed">
+							<colgroup>
+								<col width="100px" />
+								<col width="100px"/>
+								<col width="100px"/>
+								<col width="100px" />
+								<col width="100px"/>
+								<col width="100px"/>
+							</colgroup>
+							<tr>
+								<td class="ui-state-default">d</td>
+								<td class="ui-state-default">e</td>
+								<td class="ui-state-default">f</td>
+								<td class="ui-state-default">g</td>
+								<td class="ui-state-default">h</td>
+								<td class="ui-state-default">i</td>
+							</tr>
+						</table>
+					</div>
+ 					<div class="jqkg-table-bl" style="width:200px">
+						<table class=""  cellspacing="0" cellpadding="0">
+							<colgroup>
+								<col width="50px" />
+								<col width="50px"/>
+								<col width="100px"/>
+							</colgroup>
+							<tr>
+								<td class="ui-widget-content">a</td>
+								<td class="ui-widget-content">b</td>
+								<td class="ui-widget-content">c</td>
+							</tr>
+							<tr>
+								<td class="ui-widget-content">a</td>
+								<td class="ui-widget-content">b</td>
+								<td class="ui-widget-content">c</td>
+							</tr>
+							<tr>
+								<td class="ui-widget-content">a</td>
+								<td class="ui-widget-content">b</td>
+								<td class="ui-widget-content">c</td>
+							</tr>
+							<tr>
+								<td class="ui-widget-content">a</td>
+								<td class="ui-widget-content">b</td>
+								<td class="ui-widget-content">c</td>
+							</tr>
+						</table>
+					</div>
+					<div class="jqkg-table-br" style="width:452px">
+						<table class=""  width="600px" cellspacing="0" cellpadding="0">
+							<colgroup>
+								<col width="100px" />
+								<col width="100px"/>
+								<col width="100px"/>
+								<col width="100px" />
+								<col width="100px"/>
+								<col width="100px"/>
+							</colgroup>
+							<tr>
+								<td class="ui-widget-content">d</td>
+								<td class="ui-widget-content">e</td>
+								<td class="ui-widget-content">f</td>
+								<td class="ui-widget-content">g</td>
+								<td class="ui-widget-content">h</td>
+								<td class="ui-widget-content">i</td>
+							</tr>
+							<tr>
+								<td class="ui-widget-content">d</td>
+								<td class="ui-widget-content">e</td>
+								<td class="ui-widget-content">f</td>
+								<td class="ui-widget-content">g</td>
+								<td class="ui-widget-content">h</td>
+								<td class="ui-widget-content">i</td>
+							</tr>
+							<tr>
+								<td class="ui-widget-content">d</td>
+								<td class="ui-widget-content">e</td>
+								<td class="ui-widget-content">f</td>
+								<td class="ui-widget-content">g</td>
+								<td class="ui-widget-content">h</td>
+								<td class="ui-widget-content">i</td>
+							</tr>
+							<tr>
+								<td class="ui-widget-content">d</td>
+								<td class="ui-widget-content">e</td>
+								<td class="ui-widget-content">f</td>
+								<td class="ui-widget-content">g</td>
+								<td class="ui-widget-content">h</td>
+								<td class="ui-widget-content">i</td>
+							</tr>
+						</table>
+					</div> 
+
+					<!--당장 푸터기능을 구현할 필요는 없겠지... 
 					<div class="jqkg-table-fl"></div>
 					<div class="jqkg-table-fr"></div>
+					 -->
 				</div>
 				<div class="jqkg-vscroll" style="height:182px">
 					<div class="jqkg-vscroll-in" style="height:182px">
@@ -92,8 +219,7 @@
 						jQuery17209364034856311034="22">
 						<TH style="WIDTH: 53px" id=list2_id
 							class="ui-state-default ui-th-column ui-th-ltr" role=columnheader
-							jQuery17209364034856311034="3"><SPAN style="CURSOR: col-resize"
-							class="ui-jqgrid-resize ui-jqgrid-resize-ltr">&nbsp;</SPAN>
+							jQuery17209364034856311034="3">
 						<div id=jqgh_list2_id class="ui-th-div-ie ui-jqgrid-sortable">Inv No</div>
 						</TH>
 						<TH style="WIDTH: 87px" id=list2_invdate

@@ -5,6 +5,18 @@
 /*내용*/
 .jqkg .jqkg-content{position:relative}
 .jqkg .jqkg-content .jqkg-table{position:relative; float:left}
+.jqkg .jqkg-content .jqkg-table table{position:relative;border : 0px none;table-layout:fixed; }
+.jqkg .jqkg-content .jqkg-table table td{height:20px;border-top:0px;border-left:0px;overflow:hidden;text-overflow:ellipsis;}
+/*각테이블들이 위치할 레이어들*/
+.jqkg .jqkg-content .jqkg-table .jqkg-table-hl{position:absolute;left:0px;top:0px;}
+.jqkg .jqkg-content .jqkg-table .jqkg-table-hl table td{text-align:center;}
+.jqkg .jqkg-content .jqkg-table .jqkg-table-hr{position:absolute;right:0px;top:0px;overflow:hidden;}
+.jqkg .jqkg-content .jqkg-table .jqkg-table-hr table td{text-align:center;}
+.jqkg .jqkg-content .jqkg-table .jqkg-table-bl{position:absolute;left:0px;top:21px;;overflow:hidden;} /*21은 임시..*/
+.jqkg .jqkg-content .jqkg-table .jqkg-table-br{position:absolute;right:0px;top:21px;;overflow:hidden;}
+.jqkg .jqkg-content .jqkg-table .jqkg-table-fl{position:absolute;}
+.jqkg .jqkg-content .jqkg-table .jqkg-table-fr{position:absolute;}
+/* 스크롤기능 관련 */
 .jqkg .jqkg-content .jqkg-vscroll{position:relative; float:left;width:18px}
 .jqkg .jqkg-content .jqkg-vscroll .jqkg-vscroll-in{position:relative; overflow-y:scroll;}
 .jqkg .jqkg-content .jqkg-vscroll .jqkg-vscroll-inin{position:relative;width:1px}
@@ -12,6 +24,5 @@
 .jqkg .jqkg-content .jqkg-hscroll .jqkg-hscroll-in{position:relative; overflow-x:scroll;}
 .jqkg .jqkg-content .jqkg-hscroll .jqkg-hscroll-inin{position:relative;height:1px}
 
-.jqkg .jqkg-content{position:relative}
 /*페이저*/
 .jqkg .jqkg-pager{position:relative;height:22px;border-left : 0px none;border-right : 0px none;border-bottom : 0px none;}
