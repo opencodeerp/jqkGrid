@@ -55,6 +55,14 @@ $.extend($.jqkGridComm,{
 		var $grid = $(gridSelector);
 		//설정값
 		config = $.extend(true, $.jqkGridComm.defaultConfig, config||{});
+		//Fixedcol width 구한다(랜더링시 필요함)
+		var fixedColsWidth = 0, unFixedColsWidth = 0;
+		for(var i=0;i<config.colSizes.length;i++){
+			if(i<config.fixedCols) fixedColsWidth += (config.colSizes[i]-0);
+			else unFixedColsWidth += (config.colSizes[i]-0);
+		}
+		//for(var i=0;i<config.fixedCols;i++)fixedColsWidth += (fixedCols[i]-0);
+		
 		//alert(cfg.gridTitle);
 		$grid.data("config",config);//설정값을 그리드 엘리먼트객체에 저장
 		//랜더링하자..
@@ -68,10 +76,14 @@ $.extend($.jqkGridComm,{
 					"</div>")
 			//내용을 달아주자..
 			.append(" \
-				<div class='jqkg-content' style='background-color:yellow;height:"+(config.height-50)+"px;background:#00000;'>  \
+				<div class='jqkg-content' style='height:"+(config.height-50)+"px;background:#00000;'>  \
 					<div class='jqkg-table' style='width:"+(config.width-18)+"px;height:"+(config.height-68)+"px;position:relative'>  \
-						<div class='jqkg-table-hl'></div>  \
-						<div class='jqkg-table-hr'></div>  \
+						<div class='jqkg-table-hl' style='width:"+fixedColsWidth+"px'>  \
+							<table style='width:"+fixedColsWidth+"px' cellspacing='0' cellpadding='0'>  \
+							<colgroup></colgroup></table></div>  \
+						<div class='jqkg-table-hr' style='width:"+(config.width-fixedColsWidth-18)+"px'>  \
+							<table style='width:"+unFixedColsWidth+"px' cellspacing='0' cellpadding='0'>  \
+							<colgroup></colgroup></table></div>  \
 	 					<div class='jqkg-table-bl'></div>  \
 						<div class='jqkg-table-br'></div>  \
 						<div class='jqkg-table-fl'></div>  \
@@ -79,24 +91,34 @@ $.extend($.jqkGridComm,{
 					</div>  \
 					<div class='jqkg-vscroll' style='background-color:blue;height:"+(config.height-68)+"px;'>  \
 						<div class='jqkg-vscroll-in' style='height:182px;visibility:hidden'>  \
-							<div class='jqkg-vscroll-inin' style='height:500px;;visibility:hidden'></div>  \
+							<div class='jqkg-vscroll-inin' style='height:1px;width:1px'></div>  \
 						</div>  \
 					</div>  \
-					<div class='jqkg-hscroll' style='background-color:red;width:100%'>  \
-						<div class='jqkg-hscroll-in' style='height:18px;width:100%;visibility:hidden'>  \
-							<div class='jqkg-hscroll-inin' style='width:800px;;visibility:hidden'></div>  \
+					<div class='jqkg-hscroll' style='width:100%'>  \
+						<div class='jqkg-hscroll-in' style='height:18px;width:"+(config.width-fixedColsWidth-18)+"px;left:"+fixedColsWidth+"px'>  \
+							<div class='jqkg-hscroll-inin' style='height:1px;width:"+ unFixedColsWidth +"px'></div>  \
 						</div>  \
 					</div>  \
 				</div>")
 				//페이저를 달아주자..
 			.append("<div style='position:relative;bottom:0px;' class='ui-state-default ui-helper-clearfix jqkg-pager'>페이저부분</div>");
-		
-		//헤더row를 넣어준다. //일단은 테이블을 넣어준다.
+		//colGroup을 셋팅해준다.
+		for(var i=0;i<config.colSizes.length;i++){
+			if(i<config.fixedCols) $grid.find(".jqkg-table-hl table colgroup").append("<col width='"+config.colSizes[i]+"px'/>");
+			else $grid.find(".jqkg-table-hr table colgroup").append("<col width='"+config.colSizes[i]+"px'/>");
+		}
+		//TR을 넣어준다.
 		for(var i=0;i<config.headerCells.length;i++){// 헤더로우 수만큼 루핑//일반적으로는 1개..
-			var headerRow = config.headerCells[0];
-			for(var j=0;j<config.colSizes.length;j++){
-				
+			var cells = config.headerCells[i];
+			var $trFixed = $("<tr/>");
+			var $trUnFixed = $("<tr/>");
+			for(var j=0;j<cells.length;j++){
+				var sTd = "<td class='ui-state-default'><div class='jqkg-ellipsis'>"+ cells[j].caption +"</td>"; 
+				if(j<config.fixedCols)$trFixed.append(sTd);
+				else $trUnFixed.append(sTd);
 			}
+			$grid.find(".jqkg-table-hl table").append($trFixed);
+			$grid.find(".jqkg-table-hr table").append($trUnFixed);
 		}
 		
 		
@@ -131,6 +153,13 @@ $(".jqkg-table-bl table td, .jqkg-table-br table td").live("mouseover",function(
 	$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-active");
 	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").addClass("ui-state-active");
 });
+//스크롤이벤트
+$(".jqkg-hscroll-inin").live("scroll",function(){
+	alert('tt');
+});
+$(".jqkg-hscroll").live("scroll",function(){alert('tt1')});
+$(".jqkg-hscroll-in").live("scroll",function(){alert('tt2')});
+$(".jqkg-hscroll-inin").live("scroll",function(){alert('tt3')});
 //아이콘 관련 이벤트
 /* 이미지 깨짐.. 우선순위 낮으니 추후 구현..
 $(".jqkg-icon").live("mouseover",function(){
