@@ -23,10 +23,13 @@ $.extend($.jqkGridComm,{
 	version:"0.0.1",
 	//디폴트설정
 	defaultConfig : {
-		height: 400, //그리드의 default height
-		width: 600, //그리드의 default width
+		height: 250, //그리드의 default height
+		width: 500, //그리드의 default width
 		gridTitle : "Sample Grid",
 		multiSelect : false, //다중선택 여부
+		colSizes : [], 
+		headerCells : [[]],
+		fixedCols : 0, //틀고정칼럼 갯수
 		none : ""
 	},
 	/////////////////////////////////
@@ -44,15 +47,60 @@ $.extend($.jqkGridComm,{
 	//처리함수
 	//규칙 :첫번째 아규먼트는 그리드객체 자체.. 두번째 아규먼트는 인자값을 단독 또는 json타입으로 엮어서 전달함
 	//초기화메소드
-	init : function(grd, config){
-		if(!grd.tagName || grd.tagName.toUpperCase()!='DIV') {
+	init : function(gridSelector, config){
+		if(!gridSelector.tagName || gridSelector.tagName.toUpperCase()!='DIV') {
 			alert("컨테이너는 DIV 태그만 설정할 수 있습니다.");
 			return;
 		}
-		var cfg = $.extend(true, $.jqkGridComm.defaultConfig, config||{});
+		var $grid = $(gridSelector);
+		//설정값
+		config = $.extend(true, $.jqkGridComm.defaultConfig, config||{});
 		//alert(cfg.gridTitle);
-		//설정값을 셋팅함
-		$(grd).data("config",cfg);
+		$grid.data("config",config);//설정값을 그리드 엘리먼트객체에 저장
+		//랜더링하자..
+		//기본와꾸
+		$grid.addClass("jqkg").addClass("ui-widget").addClass("ui-widget-content")
+			.css({width:config.width,height:config.height})
+			//타이틀바를 달아주자..
+			.append("<div class='ui-widget-header ui-helper-clearfix jqkg-titlebar'>"+
+					"<SPAN class='jqkg-title'>"+config.gridTitle+"</SPAN>"+ 
+					"<SPAN style='RIGHT: 2px;position:absolute' class='ui-icon ui-icon-circle-triangle-n'></SPAN>"+
+					"</div>")
+			//내용을 달아주자..
+			.append(" \
+				<div class='jqkg-content' style='background-color:yellow;height:"+(config.height-50)+"px;background:#00000;'>  \
+					<div class='jqkg-table' style='width:"+(config.width-18)+"px;height:"+(config.height-68)+"px;position:relative'>  \
+						<div class='jqkg-table-hl'></div>  \
+						<div class='jqkg-table-hr'></div>  \
+	 					<div class='jqkg-table-bl'></div>  \
+						<div class='jqkg-table-br'></div>  \
+						<div class='jqkg-table-fl'></div>  \
+						<div class='jqkg-table-fr'></div>  \
+					</div>  \
+					<div class='jqkg-vscroll' style='background-color:blue;height:"+(config.height-68)+"px;'>  \
+						<div class='jqkg-vscroll-in' style='height:182px;visibility:hidden'>  \
+							<div class='jqkg-vscroll-inin' style='height:500px;;visibility:hidden'></div>  \
+						</div>  \
+					</div>  \
+					<div class='jqkg-hscroll' style='background-color:red;width:100%'>  \
+						<div class='jqkg-hscroll-in' style='height:18px;width:100%;visibility:hidden'>  \
+							<div class='jqkg-hscroll-inin' style='width:800px;;visibility:hidden'></div>  \
+						</div>  \
+					</div>  \
+				</div>")
+				//페이저를 달아주자..
+			.append("<div style='position:relative;bottom:0px;' class='ui-state-default ui-helper-clearfix jqkg-pager'>페이저부분</div>");
+		
+		//헤더row를 넣어준다. //일단은 테이블을 넣어준다.
+		for(var i=0;i<config.headerCells.length;i++){// 헤더로우 수만큼 루핑//일반적으로는 1개..
+			var headerRow = config.headerCells[0];
+			for(var j=0;j<config.colSizes.length;j++){
+				
+			}
+		}
+		
+		
+		
 	},	
 	none:""
 });
@@ -83,8 +131,14 @@ $(".jqkg-table-bl table td, .jqkg-table-br table td").live("mouseover",function(
 	$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-active");
 	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").addClass("ui-state-active");
 });
-
-
+//아이콘 관련 이벤트
+/* 이미지 깨짐.. 우선순위 낮으니 추후 구현..
+$(".jqkg-icon").live("mouseover",function(){
+	$(this).addClass("ui-state-active");
+}).live("mouseout",function(){
+	$(this).removeClass("ui-state-active");
+});
+*/
 
 
 

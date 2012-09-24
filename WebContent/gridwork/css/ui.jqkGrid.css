@@ -1,7 +1,10 @@
 /*Grid*/
 .jqkg {position:relative;font-size:11px;}
 /*타이틀바*/
-.jqkg .jqkg-titlebar{position:relative;height:18px;}
+.jqkg .jqkg-titlebar{position:relative;height:18px;
+	padding: .3em .2em .2em .3em; border-left: 0px none;border-right: 0px none; border-top: 0px none}
+.jqkg .jqkg-titlebar .jqkg-title { float: left; margin: .1em 0 .2em; }
+	
 /*내용*/
 .jqkg .jqkg-content{position:relative}
 /*테이블영역*/
@@ -37,3 +40,4 @@
 	overflow:hidden;			/* "overflow" value must be different from "visible" */ 
 	-moz-binding: url('ellipsis.xml#ellipsis');
 }
+/*.jqkg-iconf{}프로그래밍 요소로만 존재함*/
