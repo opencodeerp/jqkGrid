@@ -1,12 +1,11 @@
-//의존성 
+//의존성 (dependancy)
 //1 jQuery
-//2 jQueryUI theme
+//2 jQueryUI and theme
 //2 jLinq
 
 (function($) {
 "use strict";
 //그리드컨트롤 시작[
-
 
 /*
 객체공통부분과 플러그인함수들을 jqkGrid객체 하나로 합치려고 했으나..
@@ -22,29 +21,72 @@ $.fn.jqGrid = {}
 $.jqkGridComm = $.jqkGridComm || {};
 $.extend($.jqkGridComm,{
 	version:"0.0.1",
+	//디폴트설정
 	defaultConfig : {
-		//그리드의 default height
-		height: 150, 
-		//그리드의 default width
-		width: 800, 
+		height: 400, //그리드의 default height
+		width: 600, //그리드의 default width
 		gridTitle : "Sample Grid",
+		multiSelect : false, //다중선택 여부
 		none : ""
 	},
-	//작업메소드들(첫번째 아규먼트는 그리드객체 자체를 받는다)
+	/////////////////////////////////
+	//공통함수 
+	/////////////////////////////////
+	getGrid : function(element){
+		var jqElement = $(element);
+		for(var i=0;i<30;i++){
+			if(jqElement.hasClass("jqkg")) return jqElement;
+			jqElement = jqElement.parent();
+		}
+		return null;
+	},
+	///////////////////////////////////////
+	//처리함수
+	//규칙 :첫번째 아규먼트는 그리드객체 자체.. 두번째 아규먼트는 인자값을 단독 또는 json타입으로 엮어서 전달함
 	//초기화메소드
 	init : function(grd, config){
 		if(!grd.tagName || grd.tagName.toUpperCase()!='DIV') {
 			alert("컨테이너는 DIV 태그만 설정할 수 있습니다.");
 			return;
 		}
-		var jqGrd = $(grd);
-		
 		var cfg = $.extend(true, $.jqkGridComm.defaultConfig, config||{});
-		
-		alert(cfg.gridTitle);
+		//alert(cfg.gridTitle);
+		//설정값을 셋팅함
+		$(grd).data("config",cfg);
 	},	
 	none:""
 });
+//////////////////////////////////////////////
+//기본적인 이벤트를 잡아준다. LIVE사용..
+///////////////////////////////////////////////
+//셀 관련 이벤트
+$(".jqkg-table-bl table td, .jqkg-table-br table td").live("mouseover",function(){//마우스오버(hover클래스추가)
+	//일단 빼보자
+	if($(this).hasClass("ui-state-active")||$(this).hasClass("ui-state-hover")) return;
+	var rowId = $(this).parent().attr("_jqkgRowId");
+	//그리드 찾기
+	var $grd = $.jqkGridComm.getGrid(this);
+	//$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-hover");
+	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").addClass("ui-state-hover");
+}).live("mouseout",function(){//마우스아웃(hover클래스 삭제)
+	if(!$(this).hasClass("ui-state-hover")) return;
+	var rowId = $(this).parent().attr("_jqkgRowId");
+	//그리드 찾기
+	var $grd = $.jqkGridComm.getGrid(this);
+	//$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-hover");
+	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").removeClass("ui-state-hover");
+}).live("click",function(){//마우스클릭(active 클래스추가)
+	if($(this).hasClass("ui-state-active")) return;	
+	var rowId = $(this).parent().attr("_jqkgRowId");
+	//그리드 찾기
+	var $grd = $.jqkGridComm.getGrid(this);
+	$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-active");
+	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").addClass("ui-state-active");
+});
+
+
+
+
 
 /*
 //이건 테스트로 함 해본거

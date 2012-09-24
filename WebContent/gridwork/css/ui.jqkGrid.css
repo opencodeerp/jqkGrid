@@ -29,7 +29,7 @@
 .jqkg .jqkg-pager{position:relative;height:22px;border-left : 0px none;border-right : 0px none;border-bottom : 0px none;}
 
 /*기타*/
-/*말줄임표*/
+/*말줄임표 (table의 td안의 div로 사용됨..)*/
 .jqkg-ellipsis{
 	white-space:nowrap;
 	text-overflow:ellipsis;		/* IE, Safari */
