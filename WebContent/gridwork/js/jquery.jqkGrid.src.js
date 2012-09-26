@@ -76,7 +76,7 @@ $.extend($.jqkGridComm,{
 					"</div>")
 			//내용을 달아주자..
 			.append(" \
-				<div class='jqkg-content' style='height:"+(config.height-50)+"px;background:#00000;'>  \
+				<div class='jqkg-content' style='height:"+(config.height-50)+"px;'>  \
 					<div class='jqkg-table' style='width:"+(config.width-18)+"px;height:"+(config.height-68)+"px;position:relative'>  \
 						<div class='jqkg-table-hl' style='width:"+fixedColsWidth+"px'>  \
 							<table style='width:"+fixedColsWidth+"px' cellspacing='0' cellpadding='0'>  \
@@ -89,8 +89,8 @@ $.extend($.jqkGridComm,{
 						<div class='jqkg-table-fl'></div>  \
 						<div class='jqkg-table-fr'></div>  \
 					</div>  \
-					<div class='jqkg-vscroll' style='background-color:blue;height:"+(config.height-68)+"px;'>  \
-						<div class='jqkg-vscroll-in' style='height:182px;visibility:hidden'>  \
+					<div class='jqkg-vscroll' style='height:"+(config.height-68)+"px;'>  \
+						<div class='jqkg-vscroll-in' style='height:100%'>  \
 							<div class='jqkg-vscroll-inin' style='height:1px;width:1px'></div>  \
 						</div>  \
 					</div>  \
@@ -120,7 +120,16 @@ $.extend($.jqkGridComm,{
 			$grid.find(".jqkg-table-hl table").append($trFixed);
 			$grid.find(".jqkg-table-hr table").append($trUnFixed);
 		}
-		
+		//scroll이벤트가 live로 안먹히니까 정적으로 박아준다(추후 해결되면 아래의 동적이벤트에서 처리할 수 있음)
+		$grid.find(".jqkg-hscroll-in").on("scroll",function(){
+			$grid.find(".jqkg-table-hr").scrollLeft(this.scrollLeft);
+			$grid.find(".jqkg-table-br").scrollLeft(this.scrollLeft);
+		});
+		$grid.find(".jqkg-vscroll-in").on("scroll",function(){
+			$grid.find(".jqkg-table-bl").scrollTop(this.scrollTop);
+			$grid.find(".jqkg-table-br").scrollTop(this.scrollTop);
+		});
+		//$(document).on('scroll',
 		
 		
 	},	
@@ -130,7 +139,7 @@ $.extend($.jqkGridComm,{
 //기본적인 이벤트를 잡아준다. LIVE사용..
 ///////////////////////////////////////////////
 //셀 관련 이벤트
-$(".jqkg-table-bl table td, .jqkg-table-br table td").live("mouseover",function(){//마우스오버(hover클래스추가)
+$(document).on("mouseover", ".jqkg-table-bl table td, .jqkg-table-br table td", function(){//마우스오버(hover클래스추가)
 	//일단 빼보자
 	if($(this).hasClass("ui-state-active")||$(this).hasClass("ui-state-hover")) return;
 	var rowId = $(this).parent().attr("_jqkgRowId");
@@ -138,14 +147,16 @@ $(".jqkg-table-bl table td, .jqkg-table-br table td").live("mouseover",function(
 	var $grd = $.jqkGridComm.getGrid(this);
 	//$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-hover");
 	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").addClass("ui-state-hover");
-}).live("mouseout",function(){//마우스아웃(hover클래스 삭제)
+});
+$(document).on("mouseout", ".jqkg-table-bl table td, .jqkg-table-br table td", function(){//마우스아웃(hover클래스 삭제)
 	if(!$(this).hasClass("ui-state-hover")) return;
 	var rowId = $(this).parent().attr("_jqkgRowId");
 	//그리드 찾기
 	var $grd = $.jqkGridComm.getGrid(this);
 	//$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-hover");
 	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").removeClass("ui-state-hover");
-}).live("click",function(){//마우스클릭(active 클래스추가)
+});
+$(document).on("click", ".jqkg-table-bl table td, .jqkg-table-br table td", function(){//마우스클릭(active 클래스추가)
 	if($(this).hasClass("ui-state-active")) return;	
 	var rowId = $(this).parent().attr("_jqkgRowId");
 	//그리드 찾기
@@ -153,13 +164,14 @@ $(".jqkg-table-bl table td, .jqkg-table-br table td").live("mouseover",function(
 	$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-active");
 	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").addClass("ui-state-active");
 });
-//스크롤이벤트
-$(".jqkg-hscroll-inin").live("scroll",function(){
+
+////스크롤이벤트
+$(window).on("scroll",".jqkg-hscroll-in", function(){
 	alert('tt');
 });
-$(".jqkg-hscroll").live("scroll",function(){alert('tt1')});
-$(".jqkg-hscroll-in").live("scroll",function(){alert('tt2')});
-$(".jqkg-hscroll-inin").live("scroll",function(){alert('tt3')});
+$(window).on('scroll', '.jqkg-hscroll-in', function() {
+	alert('abcd');
+});
 //아이콘 관련 이벤트
 /* 이미지 깨짐.. 우선순위 낮으니 추후 구현..
 $(".jqkg-icon").live("mouseover",function(){
