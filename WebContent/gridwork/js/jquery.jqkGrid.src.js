@@ -6,9 +6,9 @@
 
 - 현재까지 구현된 기능
 	초기화, jQuery UI의 테마적용
-	
-- 구현해야 할 기능(우선순위에 따라)
 	데이타바인딩
+- 구현해야 할 기능(우선순위에 따라)
+
 	페이징
 	Row Selection
 	Row Editing
@@ -106,8 +106,12 @@ $.extend($.jqkGridComm,{
 						<div class='jqkg-table-hr' style='width:"+(config.width-fixedColsWidth-18)+"px'>  \
 							<table style='width:"+unFixedColsWidth+"px' cellspacing='0' cellpadding='0'>  \
 							<colgroup></colgroup></table></div>  \
-	 					<div class='jqkg-table-bl'></div>  \
-						<div class='jqkg-table-br'></div>  \
+	 					<div class='jqkg-table-bl' style='width:"+fixedColsWidth+"px'>   \
+	 						<table style='width:"+fixedColsWidth+"px' cellspacing='0' cellpadding='0'>  \
+							<colgroup></colgroup></table></div>  \
+						<div class='jqkg-table-br' style='width:"+(config.width-fixedColsWidth-18)+"px'>  \
+							<table style='width:"+unFixedColsWidth+"px' cellspacing='0' cellpadding='0'>  \
+							<colgroup></colgroup></table></div>  \
 						<div class='jqkg-table-fl'></div>  \
 						<div class='jqkg-table-fr'></div>  \
 					</div>  \
@@ -147,39 +151,86 @@ $.extend($.jqkGridComm,{
 			$grid.find(".jqkg-table-hl table").append($trFixed);
 			$grid.find(".jqkg-table-hr table").append($trUnFixed);
 		}
+		//헤더를 제외한 나머지 영역으로 바디영역을 잡아준다(TODO:추후 푸터가 구현되면 이 부분도 처리 필요);
+		$grid.find(".jqkg-table-bl,.jqkg-table-br").css("top",
+			$grid.find(".jqkg-table-hl").prop("offsetHeight")
+		).css("height",
+			$grid.find(".jqkg-table").prop("offsetHeight")-$grid.find(".jqkg-table-hl").prop("offsetHeight")
+		);
+		
+		//세로 스크롤바의 위치를 잡아준다.
+		//alert($grid.find(".jqkg-vscroll").prop("offsetHeight")-$grid.find(".jqkg-table-hl").prop("offsetHeight"));
+		$grid.find(".jqkg-vscroll-in").css("height", 
+				$grid.find(".jqkg-vscroll").prop("offsetHeight")-$grid.find(".jqkg-table-hl").prop("offsetHeight")
+		).css("top", $grid.find(".jqkg-table-hl").prop("offsetHeight"));
+		
 		//scroll이벤트가 live로 안먹히니까 정적으로 박아준다(추후 해결되면 아래의 동적이벤트에서 처리할 수 있음)
 		$grid.find(".jqkg-hscroll-in").on("scroll",function(){
 			$grid.find(".jqkg-table-hr").scrollLeft(this.scrollLeft);
 			$grid.find(".jqkg-table-br").scrollLeft(this.scrollLeft);
 		});
 		$grid.find(".jqkg-vscroll-in").on("scroll",function(){
+			alert(this.scrollTop);
 			$grid.find(".jqkg-table-bl").scrollTop(this.scrollTop);
 			$grid.find(".jqkg-table-br").scrollTop(this.scrollTop);
 		});
 		//$(document).on('scroll',
 	},
 	//데이터를 바인딩시킨다.
-	bind : function(gridSelector, data){
+	bind : function(gridSelector, dataSet){
+
+		var $grid = $(gridSelector);
+
+		//data의 갯수만큼 돌면서 그리드의 바디를 채워줌
+		for(var i =0;i<dataSet.length;i++){
+			data = dataSet[i];
+			data["_jqkgRowId"] = i;//row id
+			data["_jqkgRowStat"] = "R";//Read, Updated, Deleted, Created
+		}
+		
+		$grid.data("dataOrigin",dataSet); //객체가 복사가 되는지 참조만 되는지는 추후 
+		$grid.data("data",dataSet);
+		
+		//alert(JSON.stringify(dataSet));
+		//alert(JSON.stringify($grid.data("data")));
+		$.jqkGridComm.generateBody(gridSelector);
+	},
+	reset :  function(gridSelector){ //TODO수정기능작업 후에 잘 돌아가는지 테스트...
+		
 		var $grid = $(gridSelector);
 		//일단은 기바인딩된 현재의 데이터 Row들을 털어버린다. 
 		$grid.find(".jqkg-table-bl table tr,.jqkg-table-br table tr").remove();
-		//data의 갯수만큼 돌면서 그리드의 바디를 채워줌
-		/* 작업중...
-		for(var i =0;i<data.length;i++){//defaultBodyCell
-			for(var i=0;i<config.bodyCells.length;i++){// 바디Row만큼 루핑//일반적으로는 1개..
-				var cells = config.bodyCells[i];
-				var $trFixed = $("<tr/>");
-				var $trUnFixed = $("<tr/>");
-				for(var j=0;j<cells.length;j++){
-					var sTd = "<td class='ui-state-default'><div class='jqkg-ellipsis'>"+ cells[j].caption +"</td>"; 
-					if(j<config.fixedCols)$trFixed.append(sTd);
+		
+		$grid.data("dataOrigin",$.extend({},dataSet));
+		$grid.data("data",$.extend({},$grid.data("dataOrigin")));
+		
+		$.jqkGridComm.generateBody(gridSelector);
+	},
+	generateBody : function(gridSelector){
+		var $grid = $(gridSelector);
+		
+		$grid.find(".jqkg-table-bl table tr,.jqkg-table-br table tr").remove();//기바인딩된 현재의 데이터 Row들을 털어버린다. 
+		
+		var dataSet = $grid.data("data");
+		var config = $grid.data("config");
+
+		for(var i =0;i<dataSet.length;i++){//defaultBodyCell
+			data = dataSet[i];
+			for(var j=0;j<config.bodyCells.length;j++){// 바디Row만큼 루핑//일반적으로는 1개..
+				var cells = config.bodyCells[j];
+				var $trFixed = $("<tr _jqkgRowId='"+ data["_jqkgRowId"] +"'/>");
+				var $trUnFixed = $("<tr _jqkgRowId='"+ data["_jqkgRowId"] +"'/>");
+				for(var k=0;k<cells.length;k++){
+					var sTd = "<td class='ui-widget-content'><div class='jqkg-ellipsis'>"+ data[cells[k].bindCol] +"</td>"; 
+					if(k<config.fixedCols)$trFixed.append(sTd);
 					else $trUnFixed.append(sTd);
 				}
-				$grid.find(".jqkg-table-hl table").append($trFixed);
-				$grid.find(".jqkg-table-hr table").append($trUnFixed);
+				$grid.find(".jqkg-table-bl table").append($trFixed);
+				$grid.find(".jqkg-table-br table").append($trUnFixed);
 			}
 		}
-		*/
+		//세로스크롤의 스크롤크기를 잡아준다.
+		$grid.find(".jqkg-vscroll-inin").css("height", $grid.find(".jqkg-table-bl").prop("offsetHeight"));
 	},
 	none:""
 });
