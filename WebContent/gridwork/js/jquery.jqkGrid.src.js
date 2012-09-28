@@ -1,7 +1,25 @@
+/*
 //의존성 (dependancy)
 //1 jQuery
 //2 jQueryUI and theme
 //2 jLinq
+
+- 현재까지 구현된 기능
+	초기화, jQuery UI의 테마적용
+	
+- 구현해야 할 기능(우선순위에 따라)
+	데이타바인딩
+	페이징
+	Row Selection
+	Row Editing
+	Row Add and Delete
+	Edited data transfer
+	Column Sizing
+	
+
+
+*/
+
 
 (function($) {
 "use strict";
@@ -22,7 +40,7 @@ $.jqkGridComm = $.jqkGridComm || {};
 $.extend($.jqkGridComm,{
 	version:"0.0.1",
 	//디폴트설정
-	defaultConfig : {
+	defaultGridConfig : {
 		height: 250, //그리드의 default height
 		width: 500, //그리드의 default width
 		gridTitle : "Sample Grid",
@@ -32,9 +50,14 @@ $.extend($.jqkGridComm,{
 		fixedCols : 0, //틀고정칼럼 갯수
 		none : ""
 	},
+	defaultBodyCell : {
+		bindCol : ""
+	},
 	/////////////////////////////////
 	//공통함수 
 	/////////////////////////////////
+	//그리드의 내부 엘리먼트 중의 하나를 받아서 해당 엘리먼트를 관장하는 컨테이너 그리드객체를 리턴
+	//파라메터는 엘리먼트객체나 셀렉터식을 줄수 있다.
 	getGrid : function(element){
 		var jqElement = $(element);
 		for(var i=0;i<30;i++){
@@ -46,26 +69,25 @@ $.extend($.jqkGridComm,{
 	///////////////////////////////////////
 	//처리함수
 	//규칙 :첫번째 아규먼트는 그리드객체 자체.. 두번째 아규먼트는 인자값을 단독 또는 json타입으로 엮어서 전달함
-	//초기화메소드
+	///////////////////////////////////////
+	//그리드초기화메소드(그리드 구성시 한 번만 실행한다.)
 	init : function(gridSelector, config){
+		//기본 컨테이너는 div엘리먼트만 올 수 있다.
 		if(!gridSelector.tagName || gridSelector.tagName.toUpperCase()!='DIV') {
 			alert("컨테이너는 DIV 태그만 설정할 수 있습니다.");
 			return;
 		}
 		var $grid = $(gridSelector);
 		//설정값
-		config = $.extend(true, $.jqkGridComm.defaultConfig, config||{});
+		config = $.extend(true, $.jqkGridComm.defaultGridConfig, config||{});
 		//Fixedcol width 구한다(랜더링시 필요함)
 		var fixedColsWidth = 0, unFixedColsWidth = 0;
 		for(var i=0;i<config.colSizes.length;i++){
 			if(i<config.fixedCols) fixedColsWidth += (config.colSizes[i]-0);
 			else unFixedColsWidth += (config.colSizes[i]-0);
 		}
-		//for(var i=0;i<config.fixedCols;i++)fixedColsWidth += (fixedCols[i]-0);
-		
-		//alert(cfg.gridTitle);
 		$grid.data("config",config);//설정값을 그리드 엘리먼트객체에 저장
-		//랜더링하자..
+		//자.. 랜더링하자..
 		//기본와꾸
 		$grid.addClass("jqkg").addClass("ui-widget").addClass("ui-widget-content")
 			.css({width:config.width,height:config.height})
@@ -102,12 +124,17 @@ $.extend($.jqkGridComm,{
 				</div>")
 				//페이저를 달아주자..
 			.append("<div style='position:relative;bottom:0px;' class='ui-state-default ui-helper-clearfix jqkg-pager'>페이저부분</div>");
-		//colGroup을 셋팅해준다.
+		//colGroup을 셋팅해준다.(TODO : footer columns 추가)
 		for(var i=0;i<config.colSizes.length;i++){
-			if(i<config.fixedCols) $grid.find(".jqkg-table-hl table colgroup").append("<col width='"+config.colSizes[i]+"px'/>");
-			else $grid.find(".jqkg-table-hr table colgroup").append("<col width='"+config.colSizes[i]+"px'/>");
+			if(i<config.fixedCols) {
+				$grid.find(".jqkg-table-hl table colgroup").append("<col width='"+config.colSizes[i]+"px'/>");
+				$grid.find(".jqkg-table-bl table colgroup").append("<col width='"+config.colSizes[i]+"px'/>");
+			} else {
+				$grid.find(".jqkg-table-hr table colgroup").append("<col width='"+config.colSizes[i]+"px'/>");
+				$grid.find(".jqkg-table-br table colgroup").append("<col width='"+config.colSizes[i]+"px'/>");
+			}
 		}
-		//TR을 넣어준다.
+		//그리드 헤더 TR을 넣어준다.
 		for(var i=0;i<config.headerCells.length;i++){// 헤더로우 수만큼 루핑//일반적으로는 1개..
 			var cells = config.headerCells[i];
 			var $trFixed = $("<tr/>");
@@ -130,13 +157,35 @@ $.extend($.jqkGridComm,{
 			$grid.find(".jqkg-table-br").scrollTop(this.scrollTop);
 		});
 		//$(document).on('scroll',
-		
-		
-	},	
+	},
+	//데이터를 바인딩시킨다.
+	bind : function(gridSelector, data){
+		var $grid = $(gridSelector);
+		//일단은 기바인딩된 현재의 데이터 Row들을 털어버린다. 
+		$grid.find(".jqkg-table-bl table tr,.jqkg-table-br table tr").remove();
+		//data의 갯수만큼 돌면서 그리드의 바디를 채워줌
+		/* 작업중...
+		for(var i =0;i<data.length;i++){//defaultBodyCell
+			for(var i=0;i<config.bodyCells.length;i++){// 바디Row만큼 루핑//일반적으로는 1개..
+				var cells = config.bodyCells[i];
+				var $trFixed = $("<tr/>");
+				var $trUnFixed = $("<tr/>");
+				for(var j=0;j<cells.length;j++){
+					var sTd = "<td class='ui-state-default'><div class='jqkg-ellipsis'>"+ cells[j].caption +"</td>"; 
+					if(j<config.fixedCols)$trFixed.append(sTd);
+					else $trUnFixed.append(sTd);
+				}
+				$grid.find(".jqkg-table-hl table").append($trFixed);
+				$grid.find(".jqkg-table-hr table").append($trUnFixed);
+			}
+		}
+		*/
+	},
 	none:""
 });
 //////////////////////////////////////////////
-//기본적인 이벤트를 잡아준다. LIVE사용..
+//기본적인 이벤트를 잡아준다. LIVE이벤트이기 때문에 플러그인에 엮일 필요는 없다.
+// jQuery의 live메소드는 deprecated되었다고 하니 통합된 on메소드를 애용해주자..
 ///////////////////////////////////////////////
 //셀 관련 이벤트
 $(document).on("mouseover", ".jqkg-table-bl table td, .jqkg-table-br table td", function(){//마우스오버(hover클래스추가)
@@ -199,12 +248,12 @@ $.fn.jqkGrid = function() {
 	var param = arguments;
 	if(arguments.length < 1 || typeof arguments[0] != 'string') {
 		//추후에는 typeof $.jqkGridComm[param[0]] != 'function'  추가??
-		alert("그러한 명령이 없습니다. - " + arguments[0]||"");
+		alert("그러한 명령(함수)이 없습니다. - " + arguments[0]||"");
 		return;
 	}
 	
 	var method = $.jqkGridComm[arguments[0]];
-	//아규먼트롤 배열로 만든다.
+	//아규먼트를 배열로 만든다.
 	var param = $.makeArray(arguments);//arguments[1]||"";
 
 	return this.each( function() {
@@ -213,6 +262,14 @@ $.fn.jqkGrid = function() {
 	});
 	
 	return;
+	//이 이후에 뭐가 올 수 있을까? 아래는 아직 참조용으로 남겨둠..
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	//초기화의 경우
