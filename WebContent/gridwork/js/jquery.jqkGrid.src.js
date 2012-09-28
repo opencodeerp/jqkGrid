@@ -7,16 +7,21 @@
 - 현재까지 구현된 기능
 	초기화, jQuery UI의 테마적용
 	데이타바인딩
+	Fixed Column
+	
 - 구현해야 할 기능(우선순위에 따라)
 
 	페이징
-	Row Selection
-	Row Editing
-	Row Add and Delete
-	Edited data transfer
-	Column Sizing
+	[CRUD]Row Selection(이벤트핸들러추가)
+	[CRUD]Row Editing
+	[CRUD]Row Add and Delete
+	[CRUD]다중선택(멀티삭제 삭제할때만 쓰지 않나?)
+	[CRUD]Edited data transfer(저장기능..)
 	
-
+	Column Sizing
+	Sort Order기능(엔터프라이즈 환경에선 별로..)
+	
+- 기타 jQuery Tab 기능을 활용한 MDI 구현?
 
 */
 
@@ -153,16 +158,16 @@ $.extend($.jqkGridComm,{
 		}
 		//헤더를 제외한 나머지 영역으로 바디영역을 잡아준다(TODO:추후 푸터가 구현되면 이 부분도 처리 필요);
 		$grid.find(".jqkg-table-bl,.jqkg-table-br").css("top",
-			$grid.find(".jqkg-table-hl").prop("offsetHeight")
+			$grid.find(".jqkg-table-hr").prop("offsetHeight")
 		).css("height",
-			$grid.find(".jqkg-table").prop("offsetHeight")-$grid.find(".jqkg-table-hl").prop("offsetHeight")
+			$grid.find(".jqkg-table").prop("offsetHeight")-$grid.find(".jqkg-table-hr").prop("offsetHeight")
 		);
 		
 		//세로 스크롤바의 위치를 잡아준다.
 		//alert($grid.find(".jqkg-vscroll").prop("offsetHeight")-$grid.find(".jqkg-table-hl").prop("offsetHeight"));
 		$grid.find(".jqkg-vscroll-in").css("height", 
-				$grid.find(".jqkg-vscroll").prop("offsetHeight")-$grid.find(".jqkg-table-hl").prop("offsetHeight")
-		).css("top", $grid.find(".jqkg-table-hl").prop("offsetHeight"));
+				$grid.find(".jqkg-vscroll").prop("offsetHeight")-$grid.find(".jqkg-table-hr").prop("offsetHeight")
+		).css("top", $grid.find(".jqkg-table-hr").prop("offsetHeight"));
 		
 		//scroll이벤트가 live로 안먹히니까 정적으로 박아준다(추후 해결되면 아래의 동적이벤트에서 처리할 수 있음)
 		$grid.find(".jqkg-hscroll-in").on("scroll",function(){
@@ -170,10 +175,12 @@ $.extend($.jqkGridComm,{
 			$grid.find(".jqkg-table-br").scrollLeft(this.scrollLeft);
 		});
 		$grid.find(".jqkg-vscroll-in").on("scroll",function(){
-			alert(this.scrollTop);
 			$grid.find(".jqkg-table-bl").scrollTop(this.scrollTop);
 			$grid.find(".jqkg-table-br").scrollTop(this.scrollTop);
 		});
+//		$grid.find(".jqkg-table-bl,.jqkg-table-br").on("mousedown",function(){
+//			alert('tt');
+//		});
 		//$(document).on('scroll',
 	},
 	//데이터를 바인딩시킨다.
@@ -230,7 +237,7 @@ $.extend($.jqkGridComm,{
 			}
 		}
 		//세로스크롤의 스크롤크기를 잡아준다.
-		$grid.find(".jqkg-vscroll-inin").css("height", $grid.find(".jqkg-table-bl").prop("offsetHeight"));
+		$grid.find(".jqkg-vscroll-inin").css("height", $grid.find(".jqkg-table-br table").prop("offsetHeight"));
 	},
 	none:""
 });
@@ -314,6 +321,12 @@ $.fn.jqkGrid = function() {
 	
 	return;
 	//이 이후에 뭐가 올 수 있을까? 아래는 아직 참조용으로 남겨둠..
+	
+	
+	
+	
+	
+	
 	
 	
 	
