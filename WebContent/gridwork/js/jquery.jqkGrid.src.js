@@ -198,6 +198,10 @@ $.extend($.jqkGridComm,{
 		$grid.data("dataOrigin",dataSet); //객체가 복사가 되는지 참조만 되는지는 추후 
 		$grid.data("data",dataSet);
 		
+		//참조복사가 되는 문제.. => 개선해야 함.. jQuery의 clone사용하면 배열이 이상하게 됨..
+		$grid.data("data")[0]["a"] = "abc";
+		alert($grid.data("dataOrigin")[0]["a"] );
+		
 		//alert(JSON.stringify(dataSet));
 		//alert(JSON.stringify($grid.data("data")));
 		$.jqkGridComm.generateBody(gridSelector);
