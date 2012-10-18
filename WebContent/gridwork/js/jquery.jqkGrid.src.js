@@ -10,7 +10,7 @@
 	Fixed Column
 	
 - 구현해야 할 기능(우선순위에 따라)
-
+	정렬(좌측/중앙/우측)
 	페이징
 	[CRUD]Row Selection(이벤트핸들러추가)
 	[CRUD]Row Editing
@@ -46,17 +46,18 @@ $.extend($.jqkGridComm,{
 	version:"0.0.1",
 	//디폴트설정
 	defaultGridConfig : {
-		height: 250, //그리드의 default height
-		width: 500, //그리드의 default width
-		gridTitle : "Sample Grid",
-		multiSelect : false, //다중선택 여부
-		colSizes : [], 
-		headerCells : [[]],
-		fixedCols : 0, //틀고정칼럼 갯수
-		none : ""
+		"height": 250, //그리드의 default height
+		"width": 500, //그리드의 default width
+		"gridTitle" : "Sample Grid",
+		"multiSelect" : false, //다중선택 여부
+		"colSizes" : [], 
+		"headerCells" : [[]],
+		"fixedCols" : 0, //틀고정칼럼 갯수
+		"usingCUD" : false,//CUD사용여부(insert update delete기능)
+		"none" : ""
 	},
 	defaultBodyCell : {
-		bindCol : ""
+		"bindCol" : ""
 	},
 	/////////////////////////////////
 	//공통함수 
@@ -194,16 +195,14 @@ $.extend($.jqkGridComm,{
 			data["_jqkgRowId"] = i;//row id
 			data["_jqkgRowStat"] = "R";//Read, Updated, Deleted, Created
 		}
+		//데이터셋 객체가 참조되는 것을 막기 위해서 JSON객체를 이용해서 동적으로 객체를 다시 만들어주었음(json2.js사용)
+		var dataSetStr = JSON.stringify(dataSet);
+		$grid.data("dataOrigin",JSON.parse(dataSetStr));  
+		$grid.data("data",JSON.parse(dataSetStr));
 		
-		$grid.data("dataOrigin",dataSet); //객체가 복사가 되는지 참조만 되는지는 추후 
-		$grid.data("data",dataSet);
-		
-		//참조복사가 되는 문제.. => 개선해야 함.. jQuery의 clone사용하면 배열이 이상하게 됨..
-		$grid.data("data")[0]["a"] = "abc";
-		alert($grid.data("dataOrigin")[0]["a"] );
-		
-		//alert(JSON.stringify(dataSet));
-		//alert(JSON.stringify($grid.data("data")));
+		//$grid.data("data")[0]["a"] = "abc";
+		//alert($grid.data("dataOrigin")[0]["a"] );
+
 		$.jqkGridComm.generateBody(gridSelector);
 	},
 	reset :  function(gridSelector){ //TODO수정기능작업 후에 잘 돌아가는지 테스트...
@@ -275,6 +274,15 @@ $(document).on("click", ".jqkg-table-bl table td, .jqkg-table-br table td", func
 	$grd.find(".jqkg-table-bl table td, .jqkg-table-br table td").removeClass("ui-state-active");
 	$grd.find("tr[_jqkgRowId='"+rowId+"'] td").addClass("ui-state-active");
 });
+//마우스휠 이벤트 받아서 세로스크롤 변화시켜준다. mousewheel jquery 플러그인 사용
+$(document).on("mousewheel", ".jqkg-table-bl,.jqkg-table-br", function(event, delta, deltax, deltay) {//.jqkg .jqkg-content .jqkg-table .jqkg-table-br
+	var $grd = $.jqkGridComm.getGrid(this);
+	//$grd.find(".jqkg-vscroll-in").trigger("mousewheel");
+	$grd.find(".jqkg-vscroll-in").scrollTop(this.scrollTop-delta*30);
+	//alert(delta);
+	return false;
+});
+
 
 ////스크롤이벤트
 $(window).on("scroll",".jqkg-hscroll-in", function(){
