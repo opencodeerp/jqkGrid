@@ -15,6 +15,8 @@ document.write ('  \
 	</script>			\
 	<!--jLinq--> \
 	<script src="js/jlinq.js" type="text/javascript"></script>			\
+	<script src="js/json2.js" type="text/javascript"></script>			\
+	<script src="js/jquery.mousewheel.js" type="text/javascript"></script>			\
 	<!--jqGrid관련, jqkGrid-->\
 	<script src="js/jquery.jqGrid2.src.js" type="text/javascript"></script>			\
 	<script src="js/jquery.jqkGrid.src.js" type="text/javascript"></script>			\

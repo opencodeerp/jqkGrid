@@ -24,16 +24,16 @@
 			//그리드초기화..
 			$(".grid").jqkGrid("init",{
 				gridTitle : "My First jqkGrid!!",
-				colSizes : [50, 90, 90, 150, 150, 150, 150],//칼럼들의 사이즈는 배열로 표시(픽셀)
+				colSizes : [50, 90, 90, 150, 150, 150, 150],//칼럼들의 사이즈는 배열로 표시(픽셀단위)
 				headerCells : [[{caption:"No"},{caption:"성명"},{caption:"주민번호"},{caption:"직업"},
 				                {caption:"지위"},{caption:"취미"},{caption:"주소"}]], //헤더가 여러줄일수도 있으므로 2중배열로 표시.. columns and rows
 				bodyCells : [[{bindCol:"no"},{bindCol:"nm"},{bindCol:"ssn"},{bindCol:"job"},
 				                {bindCol:"position"},{bindCol:"hobby"},{bindCol:"addr"}]],//마찬가지로 바디가 여러 행일 수 있으니 2중배열로 표시..
-				fixedCols : 2,
+				fixedCols : 3,
 				none : ""
 			});
 			//그리드에 데이터를 바인딩..
-			$(".grid").jqkGrid("bind",gData);
+			$(".grid").jqkGrid("bind",gData,100);//bind명령, 데이터셋Array, 레코드카운트
 			
 		});
 	
