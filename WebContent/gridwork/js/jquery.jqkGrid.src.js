@@ -190,9 +190,8 @@ $.extend($.jqkGridComm,{
 
 		//data의 갯수만큼 돌면서 그리드의 바디를 채워줌
 		for(var i =0;i<dataSet.length;i++){
-			data = dataSet[i];
-			data["_jqkgRowId"] = i;//row id
-			data["_jqkgRowStat"] = "R";//Read, Updated, Deleted, Created
+			dataSet[i]["_jqkgRowId"] = i;//row id
+			dataSet[i]["_jqkgRowStat"] = "R";//Read, Updated, Deleted, Created
 		}
 		
 		$grid.data("dataOrigin",dataSet); //객체가 복사가 되는지 참조만 되는지는 추후 
@@ -226,13 +225,12 @@ $.extend($.jqkGridComm,{
 		var config = $grid.data("config");
 
 		for(var i =0;i<dataSet.length;i++){//defaultBodyCell
-			data = dataSet[i];
 			for(var j=0;j<config.bodyCells.length;j++){// 바디Row만큼 루핑//일반적으로는 1개..
 				var cells = config.bodyCells[j];
-				var $trFixed = $("<tr _jqkgRowId='"+ data["_jqkgRowId"] +"'/>");
-				var $trUnFixed = $("<tr _jqkgRowId='"+ data["_jqkgRowId"] +"'/>");
+				var $trFixed = $("<tr _jqkgRowId='"+ dataSet[i]["_jqkgRowId"] +"'/>");
+				var $trUnFixed = $("<tr _jqkgRowId='"+ dataSet[i]["_jqkgRowId"] +"'/>");
 				for(var k=0;k<cells.length;k++){
-					var sTd = "<td class='ui-widget-content'><div class='jqkg-ellipsis'>"+ data[cells[k].bindCol] +"</td>"; 
+					var sTd = "<td class='ui-widget-content'><div class='jqkg-ellipsis'>"+ dataSet[i][cells[k].bindCol] +"</td>"; 
 					if(k<config.fixedCols)$trFixed.append(sTd);
 					else $trUnFixed.append(sTd);
 				}
