@@ -1,8 +1,10 @@
 /*
-//의존성 (dependancy)
-//1 jQuery
-//2 jQueryUI and theme
-//2 jLinq
+의존성 (dependancy)
+1 jQuery
+2 jQueryUI and theme
+3 jLinq
+4 JSON2(더글라스 크록포드)
+5 maousewheel 플러그인(http://brandonaaron.net/code/mousewheel/docs)
 
 - 현재까지 구현된 기능
 	초기화, jQuery UI의 테마적용
@@ -100,7 +102,8 @@ $.extend($.jqkGridComm,{
 			//타이틀바를 달아주자..
 			.append("<div class='ui-widget-header ui-helper-clearfix jqkg-titlebar'>"+
 					"<SPAN class='jqkg-title'>"+config.gridTitle+"</SPAN>"+ 
-					"<SPAN style='RIGHT: 2px;position:absolute' class='ui-icon ui-icon-circle-triangle-n'></SPAN>"+
+					"<span style='RIGHT: 2px;position:absolute' class='ui-icon-container'>"+
+					"<SPAN class='ui-icon ui-icon-circle-triangle-n'></SPAN></span>"+
 					"</div>")
 			//내용을 달아주자..
 			.append(" \
@@ -132,7 +135,7 @@ $.extend($.jqkGridComm,{
 						</div>  \
 					</div>  \
 				</div>")
-				//페이저를 달아주자..
+			//페이저를 달아주자..
 			.append("<div style='position:relative;bottom:0px;' class='ui-state-default ui-helper-clearfix jqkg-pager'>페이저부분</div>");
 		//colGroup을 셋팅해준다.(TODO : footer columns 추가)
 		for(var i=0;i<config.colSizes.length;i++){
@@ -280,14 +283,20 @@ $(document).on("mousewheel", ".jqkg-table-bl,.jqkg-table-br", function(event, de
 	//alert(delta);
 	return false;
 });
-
-
 ////스크롤이벤트
 $(window).on("scroll",".jqkg-hscroll-in", function(){
 	alert('tt');
 });
 $(window).on('scroll', '.jqkg-hscroll-in', function() {
 	alert('abcd');
+});
+//아이콘 관련 이벤트 
+$(document).on("mouseover",".jqkg .ui-icon-container",function(){
+	$(this).addClass("ui-state-hover");
+});
+$(document).on("mouseout",".jqkg .ui-icon-container",function(){
+	$(this).removeClass("ui-state-hover");
+	//alert("out");
 });
 //아이콘 관련 이벤트
 /* 이미지 깨짐.. 우선순위 낮으니 추후 구현..
