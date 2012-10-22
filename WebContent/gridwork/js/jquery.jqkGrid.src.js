@@ -13,6 +13,7 @@
 	
 - 구현해야 할 기능(우선순위에 따라)
 	정렬(좌측/중앙/우측)
+	풍선도움말
 	페이징
 	[CRUD]Row Selection(이벤트핸들러추가)
 	[CRUD]Row Editing
@@ -22,7 +23,15 @@
 	
 	Column Sizing
 	Sort Order기능(엔터프라이즈 환경에선 별로..)
+
 	
+- $grid.data("") 관련항목
+	config : 설정사항
+	rows : 데이터 Array객체
+	rowsOrigin : 데이터 Array객체 원본
+	rowCount : 총 레코드 갯수
+	page : 현재페이지
+	startPage : 페이지버튼의 시작시퀀스
 - 기타 jQuery Tab 기능을 활용한 MDI 구현?
 
 */
@@ -56,6 +65,7 @@ $.extend($.jqkGridComm,{
 		"headerCells" : [[]],
 		"fixedCols" : 0, //틀고정칼럼 갯수
 		"usingCUD" : false,//CUD사용여부(insert update delete기능)
+		"pageSize" : 10,//페이징 사용시 한 페이지에 나타나는 Row수(실제로 10건만 연산하진 않음-total페이지 구하는 용도로만 사용)
 		"none" : ""
 	},
 	defaultBodyCell : {
@@ -103,8 +113,8 @@ $.extend($.jqkGridComm,{
 			.append("<div class='ui-widget-header ui-helper-clearfix jqkg-titlebar'>"+
 					"<SPAN class='jqkg-title'>"+config.gridTitle+"</SPAN>"+ 
 					"<span style='RIGHT: 2px;position:absolute' class='ui-icon-container'>"+
-					"<SPAN class='ui-icon ui-icon-circle-triangle-n'></SPAN></span>"+
-					"</div>")
+					//"<SPAN class='ui-icon ui-icon-circle-triangle-n'></SPAN>"+
+					"</span></div>")
 			//내용을 달아주자..
 			.append(" \
 				<div class='jqkg-content' style='height:"+(config.height-50)+"px;'>  \
@@ -136,7 +146,9 @@ $.extend($.jqkGridComm,{
 					</div>  \
 				</div>")
 			//페이저를 달아주자..
-			.append("<div style='position:relative;bottom:0px;' class='ui-state-default ui-helper-clearfix jqkg-pager'>페이저부분</div>");
+			.append("<div style='position:relative;bottom:0px;' class='ui-state-default ui-helper-clearfix jqkg-pagerbar'>"+
+					"<SPAN class='jqkg-pager'>Pager펭저</SPAN>" + 
+					"</div>");
 		//colGroup을 셋팅해준다.(TODO : footer columns 추가)
 		for(var i=0;i<config.colSizes.length;i++){
 			if(i<config.fixedCols) {
@@ -182,40 +194,41 @@ $.extend($.jqkGridComm,{
 			$grid.find(".jqkg-table-bl").scrollTop(this.scrollTop);
 			$grid.find(".jqkg-table-br").scrollTop(this.scrollTop);
 		});
+		
+		//기본 설정값
+		$grid.data("page",1).data("startPage",1);
+		
 //		$grid.find(".jqkg-table-bl,.jqkg-table-br").on("mousedown",function(){
 //			alert('tt');
 //		});
 		//$(document).on('scroll',
 	},
 	//데이터를 바인딩시킨다.
-	bind : function(gridSelector, dataSet){
+	bind : function(gridSelector, data){
 
 		var $grid = $(gridSelector);
-
+		var rows = data.rows;
 		//data의 갯수만큼 돌면서 그리드의 바디를 채워줌
-		for(var i =0;i<dataSet.length;i++){
-			dataSet[i]["_jqkgRowId"] = i;//row id
-			dataSet[i]["_jqkgRowStat"] = "R";//Read, Updated, Deleted, Created
+		for(var i =0;i<rows.length;i++){
+			rows[i]["_jqkgRowId"] = i;//row id
+			rows[i]["_jqkgRowStat"] = "R";//Read, Updated, Deleted, Created
 		}
 		//데이터셋 객체가 참조되는 것을 막기 위해서 JSON객체를 이용해서 동적으로 객체를 다시 만들어주었음(json2.js사용)
-		var dataSetStr = JSON.stringify(dataSet);
-		$grid.data("dataOrigin",JSON.parse(dataSetStr));  
-		$grid.data("data",JSON.parse(dataSetStr));
-		
+		var rowsStr = JSON.stringify(rows);
+		$grid.data("rowsOrigin",JSON.parse(rowsStr));  
+		$grid.data("rows",JSON.parse(rowsStr));
+		if(data.rowCount) $grid.data("rowCount",data.rowCount);
 		//$grid.data("data")[0]["a"] = "abc";
 		//alert($grid.data("dataOrigin")[0]["a"] );
-
 		$.jqkGridComm.generateBody(gridSelector);
+		$.jqkGridComm.generatePager(gridSelector);
 	},
 	reset :  function(gridSelector){ //TODO수정기능작업 후에 잘 돌아가는지 테스트...
-		
 		var $grid = $(gridSelector);
 		//일단은 기바인딩된 현재의 데이터 Row들을 털어버린다. 
 		$grid.find(".jqkg-table-bl table tr,.jqkg-table-br table tr").remove();
-		
-		$grid.data("dataOrigin",$.extend({},dataSet));
-		$grid.data("data",$.extend({},$grid.data("dataOrigin")));
-		
+		var rowsStr = JSON.stringify($grid.data("rowsOrigin"));
+		$grid.data("rows",JSON.parse(rowsStr));
 		$.jqkGridComm.generateBody(gridSelector);
 	},
 	generateBody : function(gridSelector){
@@ -223,16 +236,16 @@ $.extend($.jqkGridComm,{
 		
 		$grid.find(".jqkg-table-bl table tr,.jqkg-table-br table tr").remove();//기바인딩된 현재의 데이터 Row들을 털어버린다. 
 		
-		var dataSet = $grid.data("data");
+		var rows = $grid.data("rows");
 		var config = $grid.data("config");
 
-		for(var i =0;i<dataSet.length;i++){//defaultBodyCell
+		for(var i =0;i<rows.length;i++){//defaultBodyCell
 			for(var j=0;j<config.bodyCells.length;j++){// 바디Row만큼 루핑//일반적으로는 1개..
 				var cells = config.bodyCells[j];
-				var $trFixed = $("<tr _jqkgRowId='"+ dataSet[i]["_jqkgRowId"] +"'/>");
-				var $trUnFixed = $("<tr _jqkgRowId='"+ dataSet[i]["_jqkgRowId"] +"'/>");
+				var $trFixed = $("<tr _jqkgRowId='"+ rows[i]["_jqkgRowId"] +"'/>");
+				var $trUnFixed = $("<tr _jqkgRowId='"+ rows[i]["_jqkgRowId"] +"'/>");
 				for(var k=0;k<cells.length;k++){
-					var sTd = "<td class='ui-widget-content'><div class='jqkg-ellipsis'>"+ dataSet[i][cells[k].bindCol] +"</td>"; 
+					var sTd = "<td class='ui-widget-content' title='"+rows[i][cells[k].bindCol]+"'><div class='jqkg-ellipsis'>"+ rows[i][cells[k].bindCol] +"</td>"; 
 					if(k<config.fixedCols)$trFixed.append(sTd);
 					else $trUnFixed.append(sTd);
 				}
@@ -242,6 +255,22 @@ $.extend($.jqkGridComm,{
 		}
 		//세로스크롤의 스크롤크기를 잡아준다.
 		$grid.find(".jqkg-vscroll-inin").css("height", $grid.find(".jqkg-table-br table").prop("offsetHeight"));
+	},
+	generatePager : function(gridSelector){
+		var $grid = $(gridSelector);
+		$grid.find(".jqkg-pager button").remove();//페이지버튼들을 모두 지운다
+		//var page = $grid.data("page");
+		var pageSize = $grid.data("config").pageSize-0;
+		var startPage = $grid.data("startPage")-0;
+		var rowCount = $grid.data("rowCount")-0;
+		//alert(((rowCount-1)/pageSize).toFixed(0));
+		var pageCount = Math.floor((rowCount-1)/pageSize)+1;
+		alert("startPage"+startPage + ":pageCount"+pageCount);
+		for(var i=startPage;i<=startPage+9 && i<=pageCount;i++){
+			//alert(i);
+			$grid.find(".jqkg-pager").append("<button>"+i+"</button>");
+		}
+		$grid.find(".jqkg-pager button").button();
 	},
 	none:""
 });
