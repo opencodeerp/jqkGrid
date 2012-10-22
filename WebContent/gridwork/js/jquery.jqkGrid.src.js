@@ -147,7 +147,7 @@ $.extend($.jqkGridComm,{
 				</div>")
 			//페이저를 달아주자..
 			.append("<div style='position:relative;bottom:0px;' class='ui-state-default ui-helper-clearfix jqkg-pagerbar'>"+
-					"<SPAN class='jqkg-pager'>Pager펭저</SPAN>" + 
+					"<SPAN class='jqkg-pager'></SPAN>" + 
 					"</div>");
 		//colGroup을 셋팅해준다.(TODO : footer columns 추가)
 		for(var i=0;i<config.colSizes.length;i++){
@@ -259,18 +259,26 @@ $.extend($.jqkGridComm,{
 	generatePager : function(gridSelector){
 		var $grid = $(gridSelector);
 		$grid.find(".jqkg-pager button").remove();//페이지버튼들을 모두 지운다
-		//var page = $grid.data("page");
-		var pageSize = $grid.data("config").pageSize-0;
-		var startPage = $grid.data("startPage")-0;
-		var rowCount = $grid.data("rowCount")-0;
+		var page = $grid.data("page")-0; //현재페이지
+		var pageSize = $grid.data("config").pageSize-0; //페이지당 레코드 갯수
+		var startPage = $grid.data("startPage")-0; //시작페이지
+		var rowCount = $grid.data("rowCount")-0; //전체레코드 수
 		//alert(((rowCount-1)/pageSize).toFixed(0));
-		var pageCount = Math.floor((rowCount-1)/pageSize)+1;
-		alert("startPage"+startPage + ":pageCount"+pageCount);
+		var pageCount = Math.floor((rowCount-1)/pageSize)+1;//전체페이지수
+		//alert("startPage"+startPage + ":pageCount"+pageCount);
+		$grid.find(".jqkg-pager").append("<span><span class='ui-icon ui-icon-seek-first'></span></span>");
+		$grid.find(".jqkg-pager").append("<span><span class='ui-icon ui-icon-seek-prev'></span></span>");
+		$grid.find(".jqkg-pager").append("<span><span class='ui-button'>11</span></span>");
+		/*
 		for(var i=startPage;i<=startPage+9 && i<=pageCount;i++){
 			//alert(i);
-			$grid.find(".jqkg-pager").append("<button>"+i+"</button>");
+			$grid.find(".jqkg-pager").append("<span class='jqkg-pager-number-button'>"+i+"</span>");
 		}
-		$grid.find(".jqkg-pager button").button();
+		*/
+		$grid.find(".jqkg-pager").append("<span><span class='ui-icon ui-icon-seek-next'></span></span>");
+		$grid.find(".jqkg-pager").append("<span><span class='ui-icon ui-icon-seek-end'></span></span>");
+		//$grid.find(".jqkg-pager span.jqkg-pager-button").button();
+		
 	},
 	none:""
 });

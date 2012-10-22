@@ -29,7 +29,10 @@
 
 /*페이저*/
 .jqkg .jqkg-pagerbar{position:relative;height:18px;padding: .3em .2em .2em .3em; border-left: 0px none;border-right: 0px none; border-bottom: 0px none}
-.jqkg .jqkg-pagerbar .jqkg-pager { float: left; margin: .1em 0 .2em; }
+.jqkg .jqkg-pagerbar .jqkg-pager { float: left;  }
+/**/.jqkg .jqkg-pagerbar .jqkg-pager span span.jqkg-pager-number-button{line-height:0.5; padding: 0.5em 0.5em 0.5em 0.5em; }
+
+
 /*기타*/
 /*말줄임표 (table의 td안의 div로 사용됨..)*/
 .jqkg-ellipsis{
