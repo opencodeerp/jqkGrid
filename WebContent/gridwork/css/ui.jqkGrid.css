@@ -28,9 +28,10 @@
 .jqkg .jqkg-content .jqkg-hscroll .jqkg-hscroll-inin{position:relative;height:1px}
 
 /*페이저*/
-.jqkg .jqkg-pagerbar{position:relative;height:18px;padding: .3em .2em .2em .3em; border-left: 0px none;border-right: 0px none; border-bottom: 0px none}
-.jqkg .jqkg-pagerbar .jqkg-pager { float: left;  }
-/**/.jqkg .jqkg-pagerbar .jqkg-pager span span.jqkg-pager-number-button{line-height:0.5; padding: 0.5em 0.5em 0.5em 0.5em; }
+.jqkg .jqkg-pagerbar{position:relative;height:25px;border-left: 0px none;border-right: 0px none; border-bottom: 0px none}
+.jqkg .jqkg-pagerbar .jqkg-pager { float: left;  padding: 0.1em 0.1em 0.0em 0.0em;  }
+.jqkg .jqkg-pagerbar .jqkg-pager button span.ui-button-text { padding: 0.2em 0.2em 0.2em 0.2em;  }
+/*.jqkg .jqkg-pagerbar .jqkg-pager span span.jqkg-pager-number-button{line-height:0.5; padding: 0.5em 0.5em 0.5em 0.5em; }*/
 
 
 /*기타*/
