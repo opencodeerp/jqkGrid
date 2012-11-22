@@ -146,9 +146,12 @@ $.extend($.jqkGridComm,{
 						</div>  \
 					</div>  \
 				</div>")
-			//페이저를 달아주자..
+			//페이저영역
 			.append("<div style='position:relative;bottom:0px;' class='ui-state-default ui-helper-clearfix jqkg-pagerbar'>"+
-					"<SPAN class='jqkg-pager'></SPAN>" + 
+					//페이저
+					"<SPAN class='jqkg-pager'></SPAN>" +
+					//기타 기능버튼? TODO
+					//"" +
 					"</div>");
 		//colGroup을 셋팅해준다.(TODO : footer columns 추가)
 		for(var i=0;i<config.colSizes.length;i++){
@@ -260,7 +263,7 @@ $.extend($.jqkGridComm,{
 	generatePager : function(gridSelector){
 		var $grid = $(gridSelector);
 		var $pager = $grid.find(".jqkg-pager");
-		$pager.find(".jqkg-pager button").remove();//페이지버튼들을 모두 지운다
+		$pager.find("button").remove();//페이지버튼들을 모두 지운다
 		
 		var page = $grid.data("page")-0; //현재페이지
 		var pageSize = $grid.data("config").pageSize-0; //페이지당 레코드 갯수
@@ -268,7 +271,7 @@ $.extend($.jqkGridComm,{
 		var rowCount = $grid.data("rowCount")-0; //전체레코드 수
 		//alert(((rowCount-1)/pageSize).toFixed(0));
 		var pageCount = Math.floor((rowCount-1)/pageSize)+1;//전체페이지수
-		alert(pageCount);
+		//alert(pageCount);
 		//alert("startPage"+startPage + ":pageCount"+pageCount);
 		
 		if(page == 1) $("<button>first</button>").button({"icons":{"primary":"ui-icon-seek-first"},text: false,"disabled":true}).appendTo($pager);
@@ -285,7 +288,7 @@ $.extend($.jqkGridComm,{
 		if(startPage+9 > pageCount) $("<button>next</button>").button({"icons":{"primary":"ui-icon-seek-next"},text: false,"disabled":true}).appendTo($pager);
 		else $("<button>next</button>").button({"icons":{"primary":"ui-icon-seek-next"},text: false}).appendTo($pager);
 		
-		if(page == pageCount) $("<button>last</button>").button({"icons":{"primary":"ui-icon-seek-end"},text: false,"disabled":true}).appendTo($pager);
+		if(startPage > Math.floor(pageCount/10)*10) $("<button>last</button>").button({"icons":{"primary":"ui-icon-seek-end"},text: false,"disabled":true}).appendTo($pager);
 		else $("<button>last</button>").button({"icons":{"primary":"ui-icon-seek-end"},text: false}).appendTo($pager);
 		/*
 		$grid.find(".jqkg-pager").append("<span><span class='ui-icon ui-icon-seek-first'></span></span>");
@@ -348,13 +351,48 @@ $(document).on("mousewheel", ".jqkg-table-bl,.jqkg-table-br", function(event, de
 	return false;
 });
 ////스크롤이벤트
+/* 플러그인으로 해결해서 필요 없을듯..
 $(window).on("scroll",".jqkg-hscroll-in", function(){
 	alert('tt');
 });
 $(window).on('scroll', '.jqkg-hscroll-in', function() {
 	alert('abcd');
 });
+*/
+//페이저 관련 이벤트
+$(document).on("click", ".jqkg .jqkg-pager button", function(e){
+	var $grd = $.jqkGridComm.getGrid(this);
+	var val = $(this).children(".ui-button-text").text();
+	if(val=="first"){ //1페이지
+		$grd.data("startPage",1);
+		$grd.jqkGrid("generatePager");
+	} else if(val == "prev"){ //이전10개
+		var startPage = $grd.data("startPage")-0;
+		$grd.data("startPage", startPage-10);
+		$grd.jqkGrid("generatePager");
+	} else if(val == "next") { //다음 10개
+		var startPage = $grd.data("startPage")-0;
+		$grd.data("startPage", startPage+10);
+		$grd.jqkGrid("generatePager");
+	} else if(val == "last") { //마지막라운드
+		var pageSize = $grd.data("config").pageSize-0; //페이지당 레코드 갯수
+		//var startPage = $grid.data("startPage")-0; //시작페이지
+		var rowCount = $grd.data("rowCount")-0; //전체레코드 수
+		//alert(((rowCount-1)/pageSize).toFixed(0));
+		var pageCount = Math.floor((rowCount-1)/pageSize)+1;//전체페이지수
+		var newStartPage =  Math.floor(pageCount/10)*10+1;
+		$grd.data("startPage", newStartPage);
+		$grd.jqkGrid("generatePager");
+	} else if( !isNaN(val)) { //숫자지정
+		alert(val +"페이징처리  콜백함수 호출");
+	}
+	//alert(this.innerHTML);
+	//alert(val);
+	e.preventDefault();
+});
+
 //아이콘 관련 이벤트 
+/* 필요 없을듯..
 $(document).on("mouseover",".jqkg .ui-icon-container",function(){
 	$(this).addClass("ui-state-hover");
 });
@@ -362,6 +400,7 @@ $(document).on("mouseout",".jqkg .ui-icon-container",function(){
 	$(this).removeClass("ui-state-hover");
 	//alert("out");
 });
+*/
 //아이콘 관련 이벤트
 /* 이미지 깨짐.. 우선순위 낮으니 추후 구현..
 $(".jqkg-icon").live("mouseover",function(){
@@ -370,6 +409,9 @@ $(".jqkg-icon").live("mouseover",function(){
 	$(this).removeClass("ui-state-active");
 });
 */
+
+
+
 
 /////////////////////
 // 이벤트 끝..
