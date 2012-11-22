@@ -263,7 +263,7 @@ $.extend($.jqkGridComm,{
 	generatePager : function(gridSelector){
 		var $grid = $(gridSelector);
 		var $pager = $grid.find(".jqkg-pager");
-		$pager.find("button").remove();//페이지버튼들을 모두 지운다
+		$pager.find("button,span").remove();//페이지버튼들을 모두 지운다
 		
 		var page = $grid.data("page")-0; //현재페이지
 		var pageSize = $grid.data("config").pageSize-0; //페이지당 레코드 갯수
@@ -274,7 +274,7 @@ $.extend($.jqkGridComm,{
 		//alert(pageCount);
 		//alert("startPage"+startPage + ":pageCount"+pageCount);
 		
-		if(page == 1) $("<button>first</button>").button({"icons":{"primary":"ui-icon-seek-first"},text: false,"disabled":true}).appendTo($pager);
+		if(startPage == 1) $("<button>first</button>").button({"icons":{"primary":"ui-icon-seek-first"},text: false,"disabled":true}).appendTo($pager);
 		else $("<button>first</button>").button({"icons":{"primary":"ui-icon-seek-first"},text: false}).appendTo($pager);
 		
 		if(startPage == 1) $("<button>prev</button>").button({"icons":{"primary":"ui-icon-seek-prev"},text: false,"disabled":true}).appendTo($pager);
@@ -290,6 +290,8 @@ $.extend($.jqkGridComm,{
 		
 		if(startPage > Math.floor(pageCount/10)*10) $("<button>last</button>").button({"icons":{"primary":"ui-icon-seek-end"},text: false,"disabled":true}).appendTo($pager);
 		else $("<button>last</button>").button({"icons":{"primary":"ui-icon-seek-end"},text: false}).appendTo($pager);
+		
+		$("<span>  [ "+ page +" / " + pageCount + " ]</span>").appendTo($pager);
 		/*
 		$grid.find(".jqkg-pager").append("<span><span class='ui-icon ui-icon-seek-first'></span></span>");
 		$grid.find(".jqkg-pager").append("<span><span class='ui-icon ui-icon-seek-prev'></span></span>");
@@ -385,6 +387,10 @@ $(document).on("click", ".jqkg .jqkg-pager button", function(e){
 		$grd.jqkGrid("generatePager");
 	} else if( !isNaN(val)) { //숫자지정
 		alert(val +"페이징처리  콜백함수 호출");
+		//호출 한 후에..
+		$grd.data("page", val);
+		$grd.jqkGrid("generatePager");
+		
 	}
 	//alert(this.innerHTML);
 	//alert(val);
